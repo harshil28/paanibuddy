@@ -2,10 +2,6 @@ import { hideWindow, showWindow } from "../services/window";
 import ReminderScheduler from "../scheduler/ReminderScheduler";
 
 import {
-<<<<<<< HEAD
-=======
-  goodbyeMessages,
->>>>>>> 9a7989679031228215f33fa8923a2d5acd3578f1
   reminderMessages,
   successMessages,
 } from "../constants/messages";
@@ -24,10 +20,6 @@ import {
 
 class ReminderController {
   private autoDismissTimer: number | null = null;
-<<<<<<< HEAD
-=======
-  private isShowing = false;
->>>>>>> 9a7989679031228215f33fa8923a2d5acd3578f1
 
   private startAutoDismiss() {
     this.clearAutoDismiss();
@@ -45,7 +37,6 @@ class ReminderController {
     }
   }
 
-<<<<<<< HEAD
 async showReminder() {
   console.log("showReminder called");
 
@@ -68,34 +59,6 @@ async showReminder() {
 
   this.startAutoDismiss();
 }
-=======
-  async showReminder() {
-    console.log("1. showReminder");
-    const store = useCompanionStore.getState();
-
-    // Already visible or animating in
-    if (
-      store.state === "entering" ||
-      store.state === "visible" ||
-      store.state === "drinking"
-    ) {
-      return;
-    }
-
-    this.clearAutoDismiss();
-
-    store.setMessage(randomItem(reminderMessages));
-    store.setState("entering");
-
-    await showWindow();
-
-    await sleep(ENTER_ANIMATION_MS);
-
-    store.setState("visible");
-
-    this.startAutoDismiss();
-  }
->>>>>>> 9a7989679031228215f33fa8923a2d5acd3578f1
 
   async hideReminder() {
     console.log("3. hideReminder");
@@ -111,14 +74,7 @@ async showReminder() {
 
     await hideWindow();
 
-<<<<<<< HEAD
 store.setMessage(randomItem(reminderMessages));
-=======
-    store.setMessage(randomItem(reminderMessages));
-
-    // Reset for next reminder
-    store.setState("visible");
->>>>>>> 9a7989679031228215f33fa8923a2d5acd3578f1
     console.log("4. hideReminder complete");
   }
 
@@ -143,18 +99,10 @@ store.setMessage(randomItem(reminderMessages));
 
     await sleep(GOODBYE_MESSAGE_MS);
 
-<<<<<<< HEAD
     await this.hideReminder();
 
 ReminderScheduler.restart();
 
-=======
-    useSettingsStore.getState().settings.reminderInterval;
-
-    await this.hideReminder();
-
-    ReminderScheduler.scheduleAfter(reminderMinutes);
->>>>>>> 9a7989679031228215f33fa8923a2d5acd3578f1
   }
 
   async snooze() {
@@ -169,16 +117,9 @@ ReminderScheduler.restart();
 
     await this.hideReminder();
 
-<<<<<<< HEAD
 ReminderScheduler.scheduleSnooze(
     useSettingsStore.getState().settings.snoozeMinutes
 );
-=======
-    const snoozeMinutes =
-      useSettingsStore.getState().settings.snoozeMinutes;
-
-    ReminderScheduler.scheduleAfter(snoozeMinutes);
->>>>>>> 9a7989679031228215f33fa8923a2d5acd3578f1
   }
 }
 
