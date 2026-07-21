@@ -1,90 +1,107 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { listen } from "@tauri-apps/api/event";
 
 import Companion from "./components/Companion/Companion";
 import ReminderScheduler from "./scheduler/ReminderScheduler";
-import { useSettingsStore } from "./store/settingsStore";
-
-import { useState } from "react";
-import SettingsModal from "./components/Settings/SettingsModal";
 import ReminderController from "./controller/ReminderController";
 
+import SettingsModal from "./components/Settings/SettingsModal";
+
+import { useSettingsStore } from "./store/settingsStore";
+
 function App() {
-  useEffect(() => {
-    let previousSettings = useSettingsStore.getState().settings;
+    const [showSettings, setShowSettings] = useState(false);
 
-    const init = async () => {
-    await useSettingsStore.getState().load();
+    useEffect(() => {
+        let previousSettings = useSettingsStore.getState().settings;
 
-    previousSettings = useSettingsStore.getState().settings;
+        const init = async () => {
+            await useSettingsStore.getState().load();
 
-    console.log("Starting scheduler");
+            previousSettings = useSettingsStore.getState().settings;
+
+            console.log("Starting scheduler");
+
+            setTimeout(async () => {
+    await ReminderController.showReminder();
 
     ReminderScheduler.start();
+}, 2000);
+            
+        };
 
-    if(import.meta.env.DEV){
+        init();
 
-setTimeout(()=>{
-ReminderController.showReminder();
-},1000);
+        const unsubscribe = useSettingsStore.subscribe((state) => {
+            const current = state.settings;
 
-}
+            const timingChanged =
+                previousSettings.reminderInterval !== current.reminderInterval ||
+                previousSettings.startHour !== current.startHour ||
+                previousSettings.endHour !== current.endHour;
 
-};
+            if (timingChanged) {
+                ReminderScheduler.restart();
+            }
 
-    init();
+            previousSettings = current;
+        });
 
-    const unsubscribe = useSettingsStore.subscribe((state) => {
-        const current = state.settings;
+        let unlistenSettings: (() => void) | undefined;
+        let unlistenReminder: (() => void) | undefined;
 
-        const timingChanged =
-            previousSettings.reminderInterval !== current.reminderInterval ||
-            previousSettings.startHour !== current.startHour ||
-            previousSettings.endHour !== current.endHour;
+        (async () => {
+            unlistenSettings = await listen("open-settings", () => {
+                setShowSettings(true);
+            });
 
-        if (timingChanged) {
-            ReminderScheduler.restart();
-        }
+            unlistenReminder = await listen("show-reminder", () => {
+                ReminderController.showReminder();
+            });
+        })();
 
-        previousSettings = current;
-    });
+        return () => {
+            unsubscribe();
+            ReminderScheduler.stop();
 
-    return () => {
-        unsubscribe();
-        ReminderScheduler.stop();
-    };
-}, []);
+            unlistenSettings?.();
+            unlistenReminder?.();
+        };
+    }, []);
 
-const [showSettings, setShowSettings] = useState(false);
+    return (
+        <div
+            style={{
+                width: "100vw",
+                height: "100vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "transparent",
+            }}
+        >
+            <Companion />
 
-  return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "transparent",
-      }}
-    >
-      <Companion />
-      <SettingsModal
-    open={showSettings}
-    onClose={() => setShowSettings(false)}
-/>
-<button
-    onClick={() => setShowSettings(true)}
-    style={{
-        position: "fixed",
-        top: 20,
-        right: 20,
-        zIndex: 10000,
-    }}
->
-    ⚙
-</button>
-    </div>
-  );
+            <SettingsModal
+                open={showSettings}
+                onClose={() => setShowSettings(false)}
+            />
+
+            {!showSettings && (
+                <button
+                    onClick={() => setShowSettings(true)}
+                    style={{
+                        position: "fixed",
+                        top: 20,
+                        right: 20,
+                        zIndex: 10000,
+                    }}
+                >
+                    ⚙
+                </button>
+            )}
+        </div>
+    );
 }
 
 export default App;

@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import "./SettingsModal.css";
 import type { Settings } from "../../types/settings";
 import { useSettingsStore } from "../../store/settingsStore";
+import {
+    enable,
+    disable,
+    isEnabled,
+} from "@tauri-apps/plugin-autostart";
 
 interface SettingsModalProps {
     open: boolean;
@@ -22,14 +27,37 @@ export default function SettingsModal({
         }
     }, [open, settings]);
 
+    useEffect(() => {
+    const syncAutoStart = async () => {
+        const enabled = await isEnabled();
+
+        setForm((prev) => ({
+            ...prev,
+            launchOnStartup: enabled,
+        }));
+    };
+
+    if (open) {
+        syncAutoStart();
+    }
+}, [open]);
+
     if (!open) return null;
 
-    const handleSave = async () => {
-    console.log("Save button clicked");
-    console.log(form);
+   const handleSave = async () => {
+    console.log("launchOnStartup:", form.launchOnStartup);
+
+    if (form.launchOnStartup) {
+        console.log("Enabling autostart...");
+        await enable();
+    } else {
+        console.log("Disabling autostart...");
+        await disable();
+    }
+
+    console.log("isEnabled:", await isEnabled());
 
     await save(form);
-onClose();
 
     onClose();
 };
@@ -108,6 +136,29 @@ onClose();
                         Save
                     </button>
                 </div>
+                <div className="field">
+    <label
+        style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            cursor: "pointer",
+        }}
+    >
+        <input
+            type="checkbox"
+            checked={!!form.launchOnStartup}
+            onChange={(e) =>
+                setForm({
+                    ...form,
+                    launchOnStartup: e.target.checked,
+                })
+            }
+        />
+
+        Launch Paani Buddy when Windows starts
+    </label>
+</div>
             </div>
         </div>
     );
