@@ -7,8 +7,11 @@
   ],
   "permissions": [
     "core:default",
+<<<<<<< HEAD
     "core:window:allow-show",
     "core:window:allow-hide",
+=======
+>>>>>>> 9a7989679031228215f33fa8923a2d5acd3578f1
     "store:default"
   ]
 }
