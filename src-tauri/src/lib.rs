@@ -1,14 +1,29 @@
-use tauri::{Manager, PhysicalPosition};
+use tauri::{
+    include_image,
+    tray::TrayIconBuilder,
+    Manager,
+    PhysicalPosition,
+};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::default().build()) // <-- Add this
+        .plugin(
+    tauri_plugin_autostart::init(
+        tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+        None,
+    )
+)
         .setup(|app| {
+            // ----------------------------
+            // Position companion window
+            // ----------------------------
+
             let window = app.get_webview_window("main").unwrap();
 
             let monitor = window.current_monitor()?.unwrap();
 
-            // Excludes the taskbar
             let work_area = monitor.work_area();
 
             let window_width = 420;
@@ -26,6 +41,15 @@ pub fn run() {
                 - margin;
 
             window.set_position(PhysicalPosition::new(x, y))?;
+
+            // ----------------------------
+            // Create tray icon
+            // ----------------------------
+
+            TrayIconBuilder::new()
+                .icon(include_image!("./icons/tray.ico"))
+                .tooltip("Paani Buddy")
+                .build(app)?;
 
             Ok(())
         })

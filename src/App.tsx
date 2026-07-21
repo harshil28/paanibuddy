@@ -1,23 +1,56 @@
 import { useEffect } from "react";
 
 import Companion from "./components/Companion/Companion";
-
-import ReminderController from "./controller/ReminderController";
 import ReminderScheduler from "./scheduler/ReminderScheduler";
+import ReminderController from "./controller/ReminderController";
+import { useSettingsStore } from "./store/settingsStore";
+
+import { useState } from "react";
+import SettingsModal from "./components/Settings/SettingsModal";
 
 function App() {
   useEffect(() => {
+    let previousSettings = useSettingsStore.getState().settings;
 
-  // ReminderScheduler.start();
+    const init = async () => {
+    await useSettingsStore.getState().load();
 
-  // Show first reminder immediately while developing
-  if(import.meta.env.DEV){
+    previousSettings = useSettingsStore.getState().settings;
 
-      ReminderController.showReminder();
+    console.log("Starting scheduler");
 
-  }
+    ReminderScheduler.start();
 
-},[]);
+    if (import.meta.env.DEV) {
+        console.log("Showing reminder");
+        await ReminderController.showReminder();
+    }
+};
+
+    init();
+
+    const unsubscribe = useSettingsStore.subscribe((state) => {
+        const current = state.settings;
+
+        const timingChanged =
+            previousSettings.reminderInterval !== current.reminderInterval ||
+            previousSettings.startHour !== current.startHour ||
+            previousSettings.endHour !== current.endHour;
+
+        if (timingChanged) {
+            ReminderScheduler.restart();
+        }
+
+        previousSettings = current;
+    });
+
+    return () => {
+        unsubscribe();
+        ReminderScheduler.stop();
+    };
+}, []);
+
+const [showSettings, setShowSettings] = useState(false);
 
   return (
     <div
@@ -31,6 +64,21 @@ function App() {
       }}
     >
       <Companion />
+      <SettingsModal
+    open={showSettings}
+    onClose={() => setShowSettings(false)}
+/>
+<button
+    onClick={() => setShowSettings(true)}
+    style={{
+        position: "fixed",
+        top: 20,
+        right: 20,
+        zIndex: 10000,
+    }}
+>
+    ⚙
+</button>
     </div>
   );
 }

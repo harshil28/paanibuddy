@@ -1,5 +1,5 @@
 export type CompanionState =
-  | "entering"
+ "entering"
   | "visible"
   | "drinking"
   | "leaving";

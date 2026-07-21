@@ -10,7 +10,7 @@ interface CompanionStore {
 }
 
 export const useCompanionStore = create<CompanionStore>((set) => ({
-  state: "visible",
+  state: "hidden",
 
   message: "💧 Time to drink some water!",
 

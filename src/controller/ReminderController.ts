@@ -1,102 +1,137 @@
 import { hideWindow, showWindow } from "../services/window";
+import ReminderScheduler from "../scheduler/ReminderScheduler";
 
-import { goodbyeMessages, reminderMessages, successMessages } from "../constants/messages";
+import {
+  goodbyeMessages,
+  reminderMessages,
+  successMessages,
+} from "../constants/messages";
 import { randomItem } from "../utils/random";
 import { sleep } from "../utils/sleep";
 
 import { useCompanionStore } from "../store/companionStore";
-import { GOODBYE_MESSAGE_MS, SUCCESS_MESSAGE_MS } from "../constants/timings";
+import { useSettingsStore } from "../store/settingsStore";
 
 import {
-  AUTO_DISMISS_DELAY,
-  SNOOZE_DELAY,
-} from "../config";
+  ENTER_ANIMATION_MS,
+  EXIT_ANIMATION_MS,
+  GOODBYE_MESSAGE_MS,
+  SUCCESS_MESSAGE_MS,
+} from "../constants/timings";
 
 class ReminderController {
-
   private autoDismissTimer: number | null = null;
+  private isShowing = false;
 
-private startAutoDismiss() {
-  this.clearAutoDismiss();
+  private startAutoDismiss() {
+    this.clearAutoDismiss();
 
-  this.autoDismissTimer = window.setTimeout(() => {
-    this.hideReminder();
-  }, AUTO_DISMISS_DELAY);
-}
-
-private clearAutoDismiss() {
-  if (this.autoDismissTimer) {
-    clearTimeout(this.autoDismissTimer);
-    this.autoDismissTimer = null;
+    // Auto hide reminder after 30 seconds if user does nothing
+    this.autoDismissTimer = window.setTimeout(() => {
+      this.hideReminder();
+    }, 30 * 1000);
   }
-}
+
+  private clearAutoDismiss() {
+    if (this.autoDismissTimer) {
+      clearTimeout(this.autoDismissTimer);
+      this.autoDismissTimer = null;
+    }
+  }
 
   async showReminder() {
-  const store = useCompanionStore.getState();
+    console.log("1. showReminder");
+    const store = useCompanionStore.getState();
 
-  store.setMessage(randomItem(reminderMessages));
-  store.setState("entering");
+    // Already visible or animating in
+    if (
+      store.state === "entering" ||
+      store.state === "visible" ||
+      store.state === "drinking"
+    ) {
+      return;
+    }
 
-  await showWindow();
+    this.clearAutoDismiss();
 
-  await sleep(600);
+    store.setMessage(randomItem(reminderMessages));
+    store.setState("entering");
 
-  store.setState("visible");
+    await showWindow();
 
-  this.startAutoDismiss();
-}
+    await sleep(ENTER_ANIMATION_MS);
+
+    store.setState("visible");
+
+    this.startAutoDismiss();
+  }
 
   async hideReminder() {
+    console.log("3. hideReminder");
+    this.clearAutoDismiss();
+
     const store = useCompanionStore.getState();
+
+    if (store.state === "leaving") return;
 
     store.setState("leaving");
 
-    await sleep(600);
+    await sleep(EXIT_ANIMATION_MS);
 
     await hideWindow();
 
-    store.setState("visible");
     store.setMessage(randomItem(reminderMessages));
+
+    // Reset for next reminder
+    store.setState("visible");
+    console.log("4. hideReminder complete");
   }
 
   async drinkWater() {
+    console.log("2. drinkWater")
+    this.clearAutoDismiss();
 
-  this.clearAutoDismiss();
+    const store = useCompanionStore.getState();
 
-  const store = useCompanionStore.getState();
+    store.setState("drinking");
+    store.setMessage(randomItem(successMessages));
 
-  store.setState("drinking");
+    await sleep(SUCCESS_MESSAGE_MS);
 
-  store.setMessage(randomItem(successMessages));
+    const reminderMinutes =
+      useSettingsStore.getState().settings.reminderInterval;
 
-  await sleep(1500);
+    store.setMessage(
+      `👋 See you in ${reminderMinutes} minute${reminderMinutes === 1 ? "" : "s"
+      }!`
+    );
 
-  store.setMessage("👋 See you in 45 minutes!");
+    await sleep(GOODBYE_MESSAGE_MS);
 
-  await sleep(2200);
+    useSettingsStore.getState().settings.reminderInterval;
 
-  await this.hideReminder();
+    await this.hideReminder();
 
-}
+    ReminderScheduler.scheduleAfter(reminderMinutes);
+  }
 
   async snooze() {
+    console.log("2. snooze");
+    this.clearAutoDismiss();
 
-  this.clearAutoDismiss();
+    const store = useCompanionStore.getState();
 
-  const store = useCompanionStore.getState();
+    store.setMessage("😴 Alright... A few more minutes.");
 
-  store.setMessage("😴 Alright... 5 more minutes.");
+    await sleep(SUCCESS_MESSAGE_MS);
 
-  await sleep(1500);
+    await this.hideReminder();
 
-  await this.hideReminder();
+    const snoozeMinutes =
+      useSettingsStore.getState().settings.snoozeMinutes;
 
-  setTimeout(() => {
-
-      this.showReminder();
-
-  }, SNOOZE_DELAY);
-
-}}
+    ReminderScheduler.scheduleAfter(snoozeMinutes);
+  }
+}
 
 export default new ReminderController();

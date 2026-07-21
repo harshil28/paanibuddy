@@ -10,26 +10,26 @@ import ReminderController from "../../controller/ReminderController";
 import "./Companion.css";
 
 const variants = {
-  entering: {
-    x: 0,
-    opacity: 1,
-  },
+    entering: {
+        x: 0,
+        opacity: 1,
+    },
 
-  visible: {
-    x: 0,
-    opacity: 1,
-  },
+    visible: {
+        x: 0,
+        opacity: 1,
+    },
 
-  drinking: {
-    x: 0,
-    opacity: 1,
-    scale: 1.03,
-  },
+    drinking: {
+        x: 0,
+        opacity: 1,
+        scale: 1.03,
+    },
 
-  leaving: {
-    x: 250,
-    opacity: 0,
-  },
+    leaving: {
+        x: 250,
+        opacity: 0,
+    },
 };
 
 export default function Companion() {
@@ -43,9 +43,9 @@ export default function Companion() {
     <motion.div
       className="companion"
       initial={{
-        x: 250,
-        opacity: 0
-      }}
+    x: 250,
+    opacity: 0,
+}}
       animate={state}
       variants={variants}
       transition={{
