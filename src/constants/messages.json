@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-07-22",
+
+  "reminderMessages": [
+    "💧 Jal Leejiye, thak gaye honge!!",
+    "🥤 Paani break!",
+    "🌊 Your body needs water.",
+    "💙 Paani peena mat bhooliye!",
+    "✨ Ek glass paani bohot kaam aata hai.",
+    "🚰 Jal ka chhota sa break lijiye.",
+    "🌿 Taza rahiye, hydrated rahiye.",
+    "💦 Paani ka samay!",
+    "😊 Aapka future self aapko dhanyavaad dega.",
+    "💙 A small sip now, a healthier you later.",
+    "🥛 Your body is asking for water!"
+  ],
+
+  "successMessages": [
+    "💙 Great job!",
+    "🥳 Awesome!",
+    "✨ Keep it up!",
+    "🌊 Nicely done!",
+    "👏 You're staying healthy!",
+    "🚰 That's the spirit!",
+    "💪 Hydration unlocked!",
+    "😊 Well done!",
+    "🎉 Nice one!",
+    "🌿 Keep the streak going!"
+  ],
+
+  "drinkWaterMessages": [
+    "👋 Maliye {minutes} minute{plural} ma!",
+    "💧 I'll be back in {minutes} minute{plural}!",
+    "😊 Stay hydrated! Next reminder in {minutes} minute{plural}.",
+    "🌊 Aavu {minutes} minute{plural}!",
+    "🥤 See you again in {minutes} minute{plural}!",
+    "💙 Keep shining! I'll return in {minutes} minute{plural}."
+  ],
+
+  "snoozeMessages": [
+    "😴 Alright... A few more minutes.",
+    "🛌 Take a short break, but don't forget to drink water!",
+    "⏰ I'll remind you again soon, stay hydrated!",
+    "💤 A little snooze, but remember to drink water!",
+    "🕒 I'll be back in a bit, stay hydrated!"
+  ]
+}
