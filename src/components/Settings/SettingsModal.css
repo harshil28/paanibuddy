@@ -1,59 +1,140 @@
-.settings-overlay {
-    position: fixed;
-    inset: 0;
+.settings-modal {
+    position: absolute;
 
-    background: rgba(0,0,0,.35);
+    /* top: 0px; */
+    left: 50%;
+    transform: translateX(-50%);
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 170px;
+
+    background: #fff;
+
+    border: 2px solid #3b3b3b;
+    border-radius: 10px;
+
+    padding: 14px 16px;
+
+    box-shadow: 0 8px 18px rgba(0,0,0,.18);
 
     z-index: 9999;
 }
 
-.settings-modal {
+.settings-modal h2 {
+    margin: 0 0 14px;
 
-    width: 360px;
+    text-align: center;
 
-    background: white;
-
-    border-radius: 16px;
-
-    padding: 24px;
-
-    box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    font-size: 18px;
 }
 
-.settings-modal h2{
-    margin-top:0;
-    margin-bottom:16px;
+.field {
+    display: grid;
+
+    grid-template-columns: 1fr auto;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 10px;
 }
 
-.field{
+.field label {
+    margin: 0;
 
-    display:flex;
+    font-size: 13px;
 
-    flex-direction:column;
-
-    margin-bottom:12px;
-
-    gap:4px;
+    font-weight: 600;
 }
 
-.field input{
+.input-row,
+.hours-row {
+    display: flex;
 
-    padding:8px;
+    align-items: center;
 
-    font-size:12px;
+    gap: 5px;
 }
 
-.buttons{
+.input-row span,
+.hours-row span {
+    font-size: 12px;
 
-    display:flex;
+    color: #666;
+}
 
-    justify-content:flex-end;
+.field input[type="number"] {
+    width: 42px;
+    height: 28px;
 
-    gap:6px;
+    border: 2px solid #d8d8d8;
+    border-radius: 6px;
 
-    margin-top:10px;
+    text-align: center;
+
+    font-size: 13px;
+
+    padding: 0;
+
+    outline: none;
+}
+
+.field input[type="number"]:focus {
+    border-color: #4ea8de;
+}
+
+.checkbox-field {
+    margin: 12px 0;
+}
+
+.checkbox-field label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    font-weight: normal;
+}
+
+.checkbox-field input {
+    width: 15px;
+    height: 15px;
+}
+
+.buttons {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 6px;
+
+    margin-top: 12px;
+}
+
+.buttons button {
+    width: 74px;
+    height: 30px;
+
+    border: none;
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.buttons button:first-child {
+    background: #ececec;
+}
+
+.save-btn {
+    background: #58a9dc;
+    color: white;
 }

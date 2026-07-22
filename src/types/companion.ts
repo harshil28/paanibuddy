@@ -3,3 +3,7 @@ export type CompanionState =
   | "visible"
   | "drinking"
   | "leaving";
+
+export type CompanionMode =
+    | "welcome"
+    | "reminder";

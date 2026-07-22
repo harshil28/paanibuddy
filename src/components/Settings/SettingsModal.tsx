@@ -63,15 +63,17 @@ export default function SettingsModal({
 };
 
     return (
-        <div className="settings-overlay">
-            <div className="settings-modal">
-                <h2>Paani Buddy Settings</h2>
+        <div className="settings-modal">
+            <h2>Paani Buddy</h2>
 
-                <div className="field">
-                    <label>Reminder Interval (minutes)</label>
+            <div className="field">
+                <label>Reminder</label>
 
+                <div className="input-row">
                     <input
                         type="number"
+                        min={1}
+                        max={60}
                         value={form.reminderInterval}
                         onChange={(e) =>
                             setForm({
@@ -80,13 +82,19 @@ export default function SettingsModal({
                             })
                         }
                     />
+
+                    <span>min</span>
                 </div>
+            </div>
 
-                <div className="field">
-                    <label>Snooze (minutes)</label>
+            <div className="field">
+                <label>Snooze</label>
 
+                <div className="input-row">
                     <input
                         type="number"
+                        min={1}
+                        max={60}
                         value={form.snoozeMinutes}
                         onChange={(e) =>
                             setForm({
@@ -95,13 +103,19 @@ export default function SettingsModal({
                             })
                         }
                     />
+
+                    <span>min</span>
                 </div>
+            </div>
 
-                <div className="field">
-                    <label>Start Hour</label>
+            <div className="field">
+                <label>Active Hours</label>
 
+                <div className="hours-row">
                     <input
                         type="number"
+                        min={8}
+                        max={23}
                         value={form.startHour}
                         onChange={(e) =>
                             setForm({
@@ -110,13 +124,13 @@ export default function SettingsModal({
                             })
                         }
                     />
-                </div>
 
-                <div className="field">
-                    <label>End Hour</label>
+                    <span>→</span>
 
                     <input
                         type="number"
+                        min={0}
+                        max={23}
                         value={form.endHour}
                         onChange={(e) =>
                             setForm({
@@ -126,40 +140,37 @@ export default function SettingsModal({
                         }
                     />
                 </div>
+            </div>
 
-                <div className="buttons">
-                    <button onClick={onClose}>
-                        Cancel
-                    </button>
+            <div className="checkbox-field">
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={!!form.launchOnStartup}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                launchOnStartup: e.target.checked,
+                            })
+                        }
+                    />
 
-                    <button onClick={handleSave}>
-                        Save
-                    </button>
-                </div>
-                <div className="field">
-    <label
-        style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            cursor: "pointer",
-        }}
-    >
-        <input
-            type="checkbox"
-            checked={!!form.launchOnStartup}
-            onChange={(e) =>
-                setForm({
-                    ...form,
-                    launchOnStartup: e.target.checked,
-                })
-            }
-        />
+                    Launch on Windows startup
+                </label>
+            </div>
 
-        Launch Paani Buddy when Windows starts
-    </label>
-</div>
+            <div className="buttons">
+                <button onClick={onClose}>
+                    Cancel
+                </button>
+
+                <button
+                    className="save-btn"
+                    onClick={handleSave}
+                >
+                    💧 Save
+                </button>
             </div>
         </div>
-    );
+);
 }

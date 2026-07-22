@@ -1,29 +1,40 @@
 import { motion } from "framer-motion";
+import { useMemo } from "react";
 
-import idle from "../../assets/idle.png";
-import drink from "../../assets/drink.png";
+import { characters } from "../../assets/characters";
 
 import type { CompanionState } from "../../types/companion";
 
 interface Props {
-  state: CompanionState;
+    state: CompanionState;
 }
 
 export default function Character({ state }: Props) {
-  return (
-    <motion.img
-      src={state === "drinking" ? drink : idle}
-      alt="Hydro Buddy"
-      className="character"
-      animate={{
-        scale:
-          state === "drinking"
-            ? [1, 1.08, 1]
-            : 1,
-      }}
-      transition={{
-        duration: 0.4,
-      }}
-    />
-  );
+
+    const character = useMemo(() => {
+        return characters[
+            Math.floor(Math.random() * characters.length)
+        ];
+    }, []);
+
+    return (
+        <motion.img
+            src={
+                state === "drinking"
+                    ? character.drink
+                    : character.idle
+            }
+            alt="Paani Buddy"
+            className="character"
+            animate={{
+                scale:
+                    state === "drinking"
+                        ? [1, 1.08, 1]
+                        : 1,
+            }}
+            transition={{
+                duration: 0.4,
+            }}
+        />
+    );
 }

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Settings, X } from "lucide-react";
 
 import Bubble from "./Bubble";
 import Character from "./Character";
@@ -8,63 +9,72 @@ import { useCompanionStore } from "../../store/companionStore";
 import ReminderController from "../../controller/ReminderController";
 
 import "./Companion.css";
+import type { CompanionMode } from "../../types/companion";
 
 const variants = {
-    entering: {
-        x: 0,
-        opacity: 1,
-    },
-
-    visible: {
-        x: 0,
-        opacity: 1,
-    },
-
-    drinking: {
-        x: 0,
-        opacity: 1,
-        scale: 1.03,
-    },
-
-    leaving: {
-        x: 250,
-        opacity: 0,
-    },
+    entering: { x: 0, opacity: 1 },
+    visible: { x: 0, opacity: 1 },
+    drinking: { x: 0, opacity: 1, scale: 1.03 },
+    leaving: { x: 180, opacity: 0 },
 };
 
-export default function Companion() {
-  const { state, message } = useCompanionStore();
+interface Props {
+    onOpenSettings?: () => void;
+    onLetsGo?: () => void;
+    mode: CompanionMode;
+}
 
-  const isBusy =
-    state === "drinking" ||
-    state === "leaving";
+export default function Companion({
+    onOpenSettings,
+    onLetsGo,
+    mode,
+}: Props) {
+    const { state, message } = useCompanionStore();
+    
+    return (
+        <motion.div
+            className="companion"
+            initial={{
+                x: 180,
+                opacity: 0,
+            }}
+            animate={state}
+            variants={variants}
+            transition={{
+                duration: .55,
+                ease: "easeOut",
+            }}
+        >
+            <div className="toolbar">
+                <button
+                    className="toolbar-btn"
+                    onClick={onOpenSettings}
+                >
+                    <Settings size={13} strokeWidth={2.2} />
+                </button>
 
-  return (
-    <motion.div
-      className="companion"
-      initial={{
-    x: 250,
-    opacity: 0,
-}}
-      animate={state}
-      variants={variants}
-      transition={{
-        duration: .55,
-        ease: "easeOut"
-      }}
-    >
-      <Bubble
-        message={message}
-        visible={state !== "leaving"}
-      />
+                <button
+                    className="toolbar-btn close"
+                    onClick={() => ReminderController.hideReminder()}
+                >
+                    <X size={13} strokeWidth={2.4} />
+                </button>
+            </div>
 
-      <Character state={state} />
+            <Bubble
+                message={message}
+                visible={state !== "leaving"}
+            />
 
-      <ActionButtons
-        disabled={isBusy}
-        onDrink={() => ReminderController.drinkWater()}
-        onSnooze={() => ReminderController.snooze()}
-      />
-    </motion.div>
-  );
+            <Character state={state} />
+
+            <ActionButtons
+    mode={mode}
+    disabled={state !== "visible"}
+    onDrink={() => ReminderController.drinkWater()}
+    onSnooze={() => ReminderController.snooze()}
+    onLetsGo={onLetsGo}
+/>
+        </motion.div>
+    );
 }

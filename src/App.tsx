@@ -8,9 +8,26 @@ import ReminderController from "./controller/ReminderController";
 import SettingsModal from "./components/Settings/SettingsModal";
 
 import { useSettingsStore } from "./store/settingsStore";
+import type { CompanionMode } from "./types/companion";
 
 function App() {
     const [showSettings, setShowSettings] = useState(false);
+    const [mode, setMode] = useState<CompanionMode>("reminder");
+
+    const handleLetsGo = async () => {
+        const store = useSettingsStore.getState();
+
+        await store.save({
+            ...store.settings,
+            firstLaunchCompleted: true,
+        });
+
+        await ReminderController.finishWelcome();
+
+        setMode("reminder");
+
+        ReminderScheduler.start();
+    };
 
     useEffect(() => {
         let previousSettings = useSettingsStore.getState().settings;
@@ -20,14 +37,25 @@ function App() {
 
             previousSettings = useSettingsStore.getState().settings;
 
+            const settings = useSettingsStore.getState().settings;
+
             console.log("Starting scheduler");
-
+console.log("First launch:", settings.firstLaunchCompleted);
             setTimeout(async () => {
-    await ReminderController.showReminder();
+                if (!settings.firstLaunchCompleted) {
+                    console.log("Showing welcome");
+                    setMode("welcome");
 
-    ReminderScheduler.start();
-}, 2000);
-            
+                    await ReminderController.showWelcome();
+                } else {
+                    console.log("Showing reminder");
+                    setMode("reminder");
+
+                    await ReminderController.showReminder();
+
+                    ReminderScheduler.start();
+                }
+            }, 2000);
         };
 
         init();
@@ -56,12 +84,14 @@ function App() {
             });
 
             unlistenReminder = await listen("show-reminder", () => {
+                setMode("reminder");
                 ReminderController.showReminder();
             });
         })();
 
         return () => {
             unsubscribe();
+
             ReminderScheduler.stop();
 
             unlistenSettings?.();
@@ -80,26 +110,16 @@ function App() {
                 background: "transparent",
             }}
         >
-            <Companion />
+            <Companion
+                mode={mode}
+                onLetsGo={handleLetsGo}
+                onOpenSettings={() => setShowSettings(true)}
+            />
 
             <SettingsModal
                 open={showSettings}
                 onClose={() => setShowSettings(false)}
             />
-
-            {!showSettings && (
-                <button
-                    onClick={() => setShowSettings(true)}
-                    style={{
-                        position: "fixed",
-                        top: 20,
-                        right: 20,
-                        zIndex: 10000,
-                    }}
-                >
-                    ⚙
-                </button>
-            )}
         </div>
     );
 }

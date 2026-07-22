@@ -1,7 +1,7 @@
 use tauri::{
     include_image,
-    menu::{Menu, MenuItem, PredefinedMenuItem},
-    tray::{TrayIconBuilder, TrayIconEvent},
+    menu::{ Menu, MenuItem, PredefinedMenuItem },
+    tray::{ TrayIconBuilder, TrayIconEvent },
     Emitter,
     Manager,
     PhysicalPosition,
@@ -10,12 +10,12 @@ use tauri::{
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    tauri::Builder
+        ::default()
         .plugin(tauri_plugin_store::Builder::default().build())
-        .plugin(tauri_plugin_autostart::init(
-            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
-            None,
-        ))
+        .plugin(
+            tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, None)
+        )
         // Hide window instead of closing
         .on_window_event(|window, event| {
             if let WindowEvent::CloseRequested { api, .. } = event {
@@ -30,22 +30,28 @@ pub fn run() {
 
             let window = app.get_webview_window("main").unwrap();
 
-            let monitor = window.current_monitor()?.unwrap();
+            // Current monitor containing the window
+            let monitor = window.current_monitor()?.expect("No monitor available");
+
             let work_area = monitor.work_area();
 
-            let window_width = 420;
-            let window_height = 520;
-            let margin = 16;
+            // Actual window size after DPI scaling
+            let size = window.outer_size()?;
 
-            let x = work_area.position.x
-                + work_area.size.width as i32
-                - window_width
-                - margin;
+            let margin_x = 20;
+            let margin_y = 20;
 
-            let y = work_area.position.y
-                + work_area.size.height as i32
-                - window_height
-                - margin;
+            let x =
+                work_area.position.x +
+                (work_area.size.width as i32) -
+                (size.width as i32) -
+                margin_x;
+
+            let y =
+                work_area.position.y +
+                (work_area.size.height as i32) -
+                (size.height as i32) -
+                margin_y;
 
             window.set_position(PhysicalPosition::new(x, y))?;
 
@@ -53,38 +59,21 @@ pub fn run() {
             // Tray Menu
             //-------------------------
 
-            let open = MenuItem::with_id(
-                app,
-                "open",
-                "⚙ Settings",
-                true,
-                None::<&str>,
-            )?;
+            let open = MenuItem::with_id(app, "open", "⚙ Settings", true, None::<&str>)?;
 
             let reminder = MenuItem::with_id(
                 app,
                 "reminder",
                 "💧 Show Reminder",
                 true,
-                None::<&str>,
+                None::<&str>
             )?;
 
-            let quit = MenuItem::with_id(
-                app,
-                "quit",
-                "Quit",
-                true,
-                None::<&str>,
-            )?;
+            let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
 
             let menu = Menu::with_items(
                 app,
-                &[
-                    &open,
-                    &reminder,
-                    &PredefinedMenuItem::separator(app)?,
-                    &quit,
-                ],
+                &[&open, &reminder, &PredefinedMenuItem::separator(app)?, &quit]
             )?;
 
             TrayIconBuilder::new()
@@ -94,9 +83,7 @@ pub fn run() {
                 .on_menu_event(|app, event| {
                     match event.id().as_ref() {
                         "open" => {
-                            if let Some(window) =
-                                app.get_webview_window("main")
-                            {
+                            if let Some(window) = app.get_webview_window("main") {
                                 let _ = window.show();
                                 let _ = window.unminimize();
                                 let _ = window.set_focus();
@@ -106,9 +93,7 @@ pub fn run() {
                         }
 
                         "reminder" => {
-                            if let Some(window) =
-                                app.get_webview_window("main")
-                            {
+                            if let Some(window) = app.get_webview_window("main") {
                                 let _ = window.show();
                                 let _ = window.unminimize();
                                 let _ = window.set_focus();
@@ -125,22 +110,23 @@ pub fn run() {
                     }
                 })
                 .on_tray_icon_event(|tray, event| {
-                    if let TrayIconEvent::Click {
-                        button,
-                        button_state,
-                        ..
-                    } = event
-                    {
-                        if button == tauri::tray::MouseButton::Left
-                            && button_state
-                                == tauri::tray::MouseButtonState::Up
+                    if let TrayIconEvent::Click { button, button_state, .. } = event {
+                        if
+                            button == tauri::tray::MouseButton::Left &&
+                            button_state == tauri::tray::MouseButtonState::Up
                         {
-                            if let Some(window) =
-                                tray.app_handle().get_webview_window("main")
-                            {
-                                let _ = window.show();
-                                let _ = window.unminimize();
-                                let _ = window.set_focus();
+                            if let Some(window) = tray.app_handle().get_webview_window("main") {
+                                let visible = window.is_visible().unwrap_or(false);
+
+                                if visible {
+                                    let _ = window.emit("hide-reminder", ());
+                                } else {
+                                    let _ = window.show();
+                                    let _ = window.unminimize();
+                                    let _ = window.set_focus();
+
+                                    let _ = window.emit("show-reminder", ());
+                                }
                             }
                         }
                     }

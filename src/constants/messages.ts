@@ -1,14 +1,13 @@
 export const reminderMessages = [
-  "💧 Time to drink some water!",
-  "🥤 Hydration break!",
+  "💧 Jal Leejiye, thak gaye honge!!",
+  "🥤 Paani break!",
   "🌊 Your body needs water.",
-  "💙 Don't forget to hydrate!",
-  "✨ One glass of water goes a long way.",
-  "🚰 Take a quick water break.",
-  "🌿 Stay fresh, stay hydrated.",
-  "💦 Water time!",
-  "😊 Your future self will thank you.",
-  "🥛 Let's fill up that water meter!",
+  "💙 Paani peena mat bhooliye!",
+  "✨ Ek glass paani bohot kaam aata hai.",
+  "🚰 Jal ka chhota sa break lijiye.",
+  "🌿 Taza rahiye, hydrated rahiye.",
+  "💦 Paani ka samay!",
+  "😊 Aapka future self aapko dhanyavaad dega.",
 ];
 
 export const successMessages = [
@@ -24,11 +23,18 @@ export const successMessages = [
   "🌿 Keep the streak going!",
 ];
 
-export const goodbyeMessages = [
-  "👋 See you in 45 minutes!",
-  "💙 Stay hydrated until then!",
-  "🌊 Keep your bottle nearby!",
-  "😊 I'll check on you again soon!",
-  "✨ See you in a little while!",
-  "🥤 Keep sipping!",
+export const drinkWaterMessages = [
+  (m: number) => `👋 Maliye ${m} minute${m === 1 ? "" : "s"} ma!`,
+  (m: number) => `💧 I'll be back in ${m} minute${m === 1 ? "" : "s"}!`,
+  (m: number) => `😊 Stay hydrated! Next reminder in ${m} minute${m === 1 ? "" : "s"}.`,
+  (m: number) => `🌊 Aavu ${m} minute${m === 1 ? "" : "s"}!`,
+  
+];
+
+export const snoozeMessages = [
+  "😴 Alright... A few more minutes.",
+  "🛌 Take a short break, but don't forget to drink water!",
+  "⏰ I'll remind you again soon, stay hydrated!",
+  "💤 A little snooze, but remember to drink water!",
+  "🕒 I'll be back in a bit, stay hydrated!",
 ];

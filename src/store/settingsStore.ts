@@ -10,6 +10,7 @@ interface SettingsState {
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
+    firstLaunchCompleted: false,
     settings: DEFAULT_SETTINGS,
 
     load: async () => {
