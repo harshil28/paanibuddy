@@ -64,7 +64,7 @@ pub fn run() {
             let reminder = MenuItem::with_id(
                 app,
                 "reminder",
-                "💧 Show Reminder",
+                "👀 Show Reminder",
                 true,
                 None::<&str>
             )?;

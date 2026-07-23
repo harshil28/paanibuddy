@@ -9,7 +9,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS = {
     reminderInterval: 45,
-    snoozeMinutes: 2,
+    snoozeMinutes: 5,
     startHour: 10,
     endHour: 23,
     launchOnStartup: false,

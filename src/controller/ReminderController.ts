@@ -1,13 +1,15 @@
 import { hideWindow, showWindow } from "../services/window";
 import ReminderScheduler from "../scheduler/ReminderScheduler";
 
-import {
-  drinkWaterMessages,
-  reminderMessages,
-  snoozeMessages,
-  successMessages,
-} from "../constants/messages";
-import { randomItem } from "../utils/random";
+// import {
+//   drinkWaterMessages,
+//   reminderMessages,
+//   snoozeMessages,
+//   successMessages,
+// } from "../constants/messages";
+// import { randomItem } from "../utils/random";
+
+import MessageService from "../services/MessageService";
 import { sleep } from "../utils/sleep";
 
 import { useCompanionStore } from "../store/companionStore";
@@ -47,11 +49,12 @@ class ReminderController {
   }
 
 async showReminder(message?: string, autoDismiss = true) {
-    console.log("showReminder called");
-
+console.trace("showReminder called");
     const store = useCompanionStore.getState();
 
-    store.setMessage(message ?? randomItem(reminderMessages));
+    store.setMessage(
+    message ?? MessageService.getReminderMessage()
+);
     store.setState("entering");
 
     await showWindow();
@@ -66,16 +69,13 @@ async showReminder(message?: string, autoDismiss = true) {
 }
 
 async showWelcome() {
-  console.log("1. showWelcome");
-    await this.showReminder(
-        `👋 Hi there! I'm Paani Buddy.
-I'll pop in every now and then to remind you to stay hydrated.`,
+    await this.showReminder(`👋 Hi Het! I'm Paani Buddy.
+      Hu jarak jarak vaare aavti rais, paani nu yaad karava.`,
         false
     );
 }
 
   async hideReminder() {
-    console.log("3. hideReminder");
     this.clearAutoDismiss();
 
     const store = useCompanionStore.getState();
@@ -87,26 +87,24 @@ I'll pop in every now and then to remind you to stay hydrated.`,
     await sleep(EXIT_ANIMATION_MS);
 
     await hideWindow();
-
-store.setMessage(randomItem(reminderMessages));
-    console.log("4. hideReminder complete");
-  }
+}
 
   async drinkWater() {
-    console.log("2. drinkWater")
     this.clearAutoDismiss();
 
     const store = useCompanionStore.getState();
 
     store.setState("drinking");
-    store.setMessage(randomItem(successMessages));
+    store.setMessage(MessageService.getSuccessMessage());
 
     await sleep(SUCCESS_MESSAGE_MS);
 
     const reminderMinutes =
       useSettingsStore.getState().settings.reminderInterval;
 
-    store.setMessage(randomItem(drinkWaterMessages)(reminderMinutes));
+    store.setMessage(
+    MessageService.getDrinkWaterMessage(reminderMinutes)
+);
 
     await sleep(GOODBYE_MESSAGE_MS);
 
@@ -117,13 +115,12 @@ ReminderScheduler.restart();
   }
 
   async finishWelcome() {
-    console.log("2. finishWelcome triggered");
     this.clearAutoDismiss();
 
     const store = useCompanionStore.getState();
 
     store.setMessage(
-`Chalo Sarass!! Malta rehsu have !!`
+`Chalo Sarass!! Malta rehsu have !!😁✨`
 );
 
     await sleep(GOODBYE_MESSAGE_MS);
@@ -132,12 +129,13 @@ ReminderScheduler.restart();
 }
 
   async snooze() {
-    console.log("2. snooze");
     this.clearAutoDismiss();
 
     const store = useCompanionStore.getState();
 
-    store.setMessage(randomItem(snoozeMessages));
+    store.setMessage(
+    MessageService.getSnoozeMessage()
+);
 
     await sleep(SUCCESS_MESSAGE_MS);
 

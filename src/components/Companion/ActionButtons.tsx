@@ -36,7 +36,7 @@ export default function ActionButtons({
                     disabled={disabled}
                     onClick={onLetsGo}
                 >
-                    👋 Let's Go
+                    🤙Chalo okayy
                 </button>
             ) : (
                 <>
@@ -45,7 +45,7 @@ export default function ActionButtons({
                         disabled={disabled}
                         onClick={onDrink}
                     >
-                        💧 Drink
+                        💧 Pidhu
                     </button>
 
                     <button
@@ -53,7 +53,7 @@ export default function ActionButtons({
                         disabled={disabled}
                         onClick={onSnooze}
                     >
-                        Snooze
+                        Aavjo
                     </button>
                 </>
             )}

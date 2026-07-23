@@ -9,6 +9,7 @@ import SettingsModal from "./components/Settings/SettingsModal";
 
 import { useSettingsStore } from "./store/settingsStore";
 import type { CompanionMode } from "./types/companion";
+import MessageService from "./services/MessageService";
 
 function App() {
     const [showSettings, setShowSettings] = useState(false);
@@ -25,7 +26,6 @@ function App() {
         await ReminderController.finishWelcome();
 
         setMode("reminder");
-
         ReminderScheduler.start();
     };
 
@@ -38,18 +38,15 @@ function App() {
             previousSettings = useSettingsStore.getState().settings;
 
             const settings = useSettingsStore.getState().settings;
-
-            console.log("Starting scheduler");
-console.log("First launch:", settings.firstLaunchCompleted);
             setTimeout(async () => {
                 if (!settings.firstLaunchCompleted) {
-                    console.log("Showing welcome");
                     setMode("welcome");
 
                     await ReminderController.showWelcome();
                 } else {
-                    console.log("Showing reminder");
                     setMode("reminder");
+
+                    await MessageService.initialize();
 
                     await ReminderController.showReminder();
 
@@ -84,6 +81,7 @@ console.log("First launch:", settings.firstLaunchCompleted);
             });
 
             unlistenReminder = await listen("show-reminder", () => {
+                console.log("📣 show-reminder event received");
                 setMode("reminder");
                 ReminderController.showReminder();
             });

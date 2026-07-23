@@ -10,6 +10,12 @@ import char3Drink from "./char3/drink.png";
 import char4Idle from "./char4/idle.png";
 import char4Drink from "./char4/drink.png";
 
+import char5Idle from "./char5/idle.png";
+import char5Drink from "./char5/drink.png";
+
+import char6Idle from "./char6/idle.png";
+import char6Drink from "./char6/drink.png";
+
 export const characters = [
     {
         idle: char1Idle,
@@ -24,9 +30,16 @@ export const characters = [
         idle: char3Idle,
         drink: char3Drink,
     },
-    
     {
         idle: char4Idle,
         drink: char4Drink,
+    },
+    {
+        idle: char5Idle,
+        drink: char5Drink,
+    },
+    {
+        idle: char6Idle,
+        drink: char6Drink,
     }
 ];

@@ -45,17 +45,12 @@ export default function SettingsModal({
     if (!open) return null;
 
    const handleSave = async () => {
-    console.log("launchOnStartup:", form.launchOnStartup);
 
     if (form.launchOnStartup) {
-        console.log("Enabling autostart...");
         await enable();
     } else {
-        console.log("Disabling autostart...");
         await disable();
     }
-
-    console.log("isEnabled:", await isEnabled());
 
     await save(form);
 
@@ -168,7 +163,7 @@ export default function SettingsModal({
                     className="save-btn"
                     onClick={handleSave}
                 >
-                    💧 Save
+                    Save
                 </button>
             </div>
         </div>
